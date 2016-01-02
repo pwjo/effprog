@@ -16,7 +16,7 @@
 
    To verify that these things work, every defined word gets a serial
    number (starting with 1) and a hash is computed across all found
-   words */
+   words  */
 
 #include <stdlib.h>
 #include <sys/types.h>
