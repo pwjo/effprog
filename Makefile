@@ -1,6 +1,9 @@
 all: ep15
 	perf stat -e cycles:u -e instructions:u -e branch-misses:u -e L1-dcache-load-misses -e L1-dcache-loads ./ep15 cross.input
 
+gperf: input.gperf
+	gperf -c input.gperf > gperf-hash.c
+
 ep15: ep15.c
 	gcc -g -O3 -Wall -o ep15 ep15.c
 

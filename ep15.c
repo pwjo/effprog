@@ -28,6 +28,12 @@
 #include <string.h>
 
 #define  HASHTABLE 1
+#define  USE_GPERF 1
+
+
+#ifdef USE_GPERF
+#include "gperf-hash.c"
+#endif
 
 #include <limits.h>
 
@@ -96,6 +102,9 @@ hashtable_t *ht_create( int size )
 /* Hash a string for a particular hash table. */
 int ht_hash( hashtable_t *hashtable, unsigned char *key, size_t key_len ) {
 
+#ifdef USE_GPERF
+    unsigned long int hashval = hash((const char*) key, key_len);
+#else
     unsigned long int hashval=0 ;
     int i = 0;
 
@@ -105,6 +114,7 @@ int ht_hash( hashtable_t *hashtable, unsigned char *key, size_t key_len ) {
         hashval += key[ i ];
         i++;
     }
+#endif
 
     return hashval % hashtable->size;
 }
