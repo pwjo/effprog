@@ -118,11 +118,16 @@ int ht_hash( hashtable_t *hashtable, unsigned char *key, size_t key_len ) {
     int i = 0;
 
     /* Convert our string to an integer */
-    while( hashval < ULONG_MAX && i < key_len ) {
-        hashval = hashval << 8;
-        hashval += key[ i ];
-        i++;
-    }
+	if( hashval < ULONG_MAX && i < key_len ){
+		hashval = hashval << 8;
+		hashval += key[ i ];
+		i++;
+		while( hashval < ULONG_MAX && i < key_len ) {
+			hashval = hashval << 8;
+			hashval += key[ i ];
+			i++;
+		}
+	}
 #endif
 
     return hashval % hashtable->size;
@@ -150,12 +155,15 @@ list_entry *ht_get( hashtable_t *hashtable, unsigned char *key, size_t key_len )
     int bin = ht_hash( hashtable, key, key_len );
 
     list_entry *pair = hashtable->table[ bin ];
-    while( pair != NULL && pair->name != NULL && 
-           (key_len != pair->name_len || memcmp(key,pair->name,key_len)!=0) ) 
-    {
-        pair = pair->next;
-    }
-
+	if(pair != NULL && pair->name != NULL && 
+			   (key_len != pair->name_len || memcmp(key,pair->name,key_len)!=0) ){
+		pair=pair->next;
+		while( pair != NULL && pair->name != NULL && 
+			   (key_len != pair->name_len || memcmp(key,pair->name,key_len)!=0) ) 
+		{
+			pair = pair->next;
+		}
+	}
     return pair;
 }
 
