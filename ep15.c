@@ -89,8 +89,17 @@ hashtable_t *ht_create( int size )
     if( ( hashtable->table = malloc( sizeof( list_entry * ) * size ) ) == NULL ) {
         return NULL;
     }
-    for( i = 0; i < size; i++ ) {
+    for( i = 0; i < size; i+=10 ) {
         hashtable->table[i] = NULL;
+		hashtable->table[i+1] = NULL;
+		hashtable->table[i+2] = NULL;
+		hashtable->table[i+3] = NULL;
+		hashtable->table[i+4] = NULL;
+		hashtable->table[i+5] = NULL;
+		hashtable->table[i+6] = NULL;
+		hashtable->table[i+7] = NULL;
+		hashtable->table[i+8] = NULL;
+		hashtable->table[i+9] = NULL;
     }
 
     hashtable->size = size;
@@ -223,27 +232,28 @@ unsigned char *find(unsigned char *s, unsigned long *foundp) {
   signed long j;
   for (i=0; s[i]>' '; i++)
     ;
-  for (j=order_len-1; j>=0; j--) {
-
 #ifdef HASHTABLE
+	for (j=order_len-1; j>=0; j--) {
     
-    hashtable_t *ht= wordlists[order[j]];
+		hashtable_t *ht= wordlists[order[j]];
 
-    if( ht == NULL )
-        continue;
+		if( ht == NULL )
+			continue;
 
-    list_entry *l= ht_get( ht , s, i );
-    if( l != NULL )
-    {
-        *foundp= l->serialno;
-        return s+i;
-    }
+		list_entry *l= ht_get( ht , s, i );
+		if( l != NULL )
+		{
+			*foundp= l->serialno;
+			return s+i;
+		}
+	}
 #else
-    search_wordlist(s,i,wordlists[order[j]],foundp);
-    if (*foundp != 0)
-      return s+i;
+    for (j=order_len-1; j>=0; j--) {
+		search_wordlist(s,i,wordlists[order[j]],foundp);
+		if (*foundp != 0)
+		  return s+i;
+	}
 #endif
-  }
   *foundp = 0;
   return s+i;
 }
