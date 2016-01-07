@@ -27,9 +27,6 @@
 #include <sys/mman.h>
 #include <string.h>
 
-#define  HASHTABLE 1
-#define  USE_GPERF 1
-
 
 #ifdef USE_GPERF
 #include "gperf-hash.c"
