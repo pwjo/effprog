@@ -27,6 +27,9 @@
 #include <sys/mman.h>
 #include <string.h>
 
+#define HASHTABLE_BITS 10
+#define HASHTABLE_SIZE (1<<HASHTABLE_BITS)
+#define HASHTABLE_MASK (HASHTABLE_SIZE-1)
 
 #ifdef USE_GPERF
 #include "gperf-hash.c"
@@ -45,8 +48,7 @@ typedef struct list_entry {
 
 
 typedef struct {
-    int size;
-    list_entry  **table; 
+    list_entry  *table[HASHTABLE_SIZE];
 } hashtable_t ;
 
 
@@ -70,38 +72,9 @@ size_t order_len;
 
 
 
-hashtable_t *ht_create( int size ) 
+inline hashtable_t *ht_create( void )
 {
-    hashtable_t *hashtable = NULL;
-    int i;
-
-    if( size < 1 ) return NULL;
-
-    /* Allocate the table itself. */
-    if( ( hashtable = malloc( sizeof( hashtable_t ) ) ) == NULL ) {
-        return NULL;
-    }
-
-    /* Allocate pointers to the head nodes. */
-    if( ( hashtable->table = malloc( sizeof( list_entry * ) * size ) ) == NULL ) {
-        return NULL;
-    }
-    for( i = 0; i < size; i+=10 ) {
-        hashtable->table[i] = NULL;
-		hashtable->table[i+1] = NULL;
-		hashtable->table[i+2] = NULL;
-		hashtable->table[i+3] = NULL;
-		hashtable->table[i+4] = NULL;
-		hashtable->table[i+5] = NULL;
-		hashtable->table[i+6] = NULL;
-		hashtable->table[i+7] = NULL;
-		hashtable->table[i+8] = NULL;
-		hashtable->table[i+9] = NULL;
-    }
-
-    hashtable->size = size;
-
-    return hashtable;   
+    return calloc( 1, sizeof( hashtable_t ) );
 }
 
 
@@ -120,10 +93,10 @@ int ht_hash( hashtable_t *hashtable, unsigned char *key, size_t key_len ) {
 			hashval += key[ i ];
 			i++;
 	}
-	
+
 #endif
 
-    return hashval % hashtable->size;
+    return hashval & HASHTABLE_MASK;
 }
 
 
@@ -174,7 +147,7 @@ unsigned char *create(unsigned char *s, unsigned long serialno) {
   
   if( hashtable == NULL )
   {
-    hashtable= ht_create( 4000 );
+    hashtable= ht_create();
     wordlists[w]= hashtable;
   }
 
