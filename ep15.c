@@ -126,7 +126,7 @@ list_entry *ht_get( hashtable_t *hashtable, unsigned char *key, size_t key_len )
     int bin = ht_hash( hashtable, key, key_len );
 
     list_entry *pair = *ht_pair( hashtable, bin );
-	while( pair != NULL && pair->name != NULL && 
+	while( pair != NULL &&
 			   (key_len != pair->name_len || memcmp(key,pair->name,key_len)!=0) ) 
 		{
 			pair = pair->next;
