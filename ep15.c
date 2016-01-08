@@ -41,6 +41,7 @@
    as you see fit */
 typedef struct list_entry {
   struct list_entry *next;
+  int hash;
   unsigned char *name;
   size_t name_len;
   unsigned long serialno;
@@ -100,7 +101,7 @@ int ht_hash( hashtable_t *hashtable, unsigned char *key, size_t key_len ) {
 
 #endif
 
-    return hashval & HASHTABLE_MASK;
+    return hashval;
 }
 
 
@@ -113,6 +114,7 @@ void ht_set( hashtable_t *hashtable, unsigned char *key, size_t key_len, int ser
 
     list_entry *new = malloc(sizeof(list_entry));
 
+    new->hash= bin;
     new->name= key;
     new->name_len= key_len;
     new->serialno= serialno;
@@ -127,7 +129,7 @@ list_entry *ht_get( hashtable_t *hashtable, unsigned char *key, size_t key_len )
 
     list_entry *pair = *ht_pair( hashtable, bin );
 	while( pair != NULL &&
-			   (key_len != pair->name_len || memcmp(key,pair->name,key_len)!=0) ) 
+			   (bin != pair->hash || key_len != pair->name_len || memcmp(key,pair->name,key_len)!=0) )
 		{
 			pair = pair->next;
 	}
