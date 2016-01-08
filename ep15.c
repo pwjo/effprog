@@ -77,6 +77,10 @@ inline hashtable_t *ht_create( void )
     return calloc( 1, sizeof( hashtable_t ) );
 }
 
+inline list_entry **ht_pair( hashtable_t *hashtable, int bin )
+{
+  return hashtable->table + (bin & HASHTABLE_MASK);
+}
 
 /* Hash a string for a particular hash table. */
 int ht_hash( hashtable_t *hashtable, unsigned char *key, size_t key_len ) {
@@ -105,22 +109,23 @@ int ht_hash( hashtable_t *hashtable, unsigned char *key, size_t key_len ) {
 void ht_set( hashtable_t *hashtable, unsigned char *key, size_t key_len, int serialno ) 
 {
     int bin = ht_hash( hashtable, key, key_len );
+    list_entry **pair = ht_pair( hashtable, bin );
 
     list_entry *new = malloc(sizeof(list_entry));
 
     new->name= key;
     new->name_len= key_len;
     new->serialno= serialno;
-    new->next= hashtable->table[ bin ];
+    new->next= *pair;
 
-    hashtable->table[ bin ]= new;
+    *pair= new;
 }
 
 list_entry *ht_get( hashtable_t *hashtable, unsigned char *key, size_t key_len ) 
 {
     int bin = ht_hash( hashtable, key, key_len );
 
-    list_entry *pair = hashtable->table[ bin ];
+    list_entry *pair = *ht_pair( hashtable, bin );
 	while( pair != NULL && pair->name != NULL && 
 			   (key_len != pair->name_len || memcmp(key,pair->name,key_len)!=0) ) 
 		{
