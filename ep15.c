@@ -67,11 +67,29 @@ list_entry *wordlists[256];
 unsigned char *order;
 size_t order_len;
 
+size_t allocator_remaining = 0;
+list_entry *allocator_next;
 
 
 
+inline list_entry *alloc_entry()
+{
+#ifdef USE_CUSTOM_ALLOC
+  static const size_t allocator_size = 1024;
 
+  if (!allocator_remaining)
+  {
+    allocator_next = malloc(sizeof(list_entry) * allocator_size);
+    allocator_remaining = allocator_size - 1;
+  }
+  else
+    allocator_remaining--;
 
+  return allocator_next++;
+#else
+  return malloc(sizeof(list_entry));
+#endif
+}
 
 inline hashtable_t *ht_create( void )
 {
@@ -112,7 +130,7 @@ void ht_set( hashtable_t *hashtable, unsigned char *key, size_t key_len, int ser
     int bin = ht_hash( hashtable, key, key_len );
     list_entry **pair = ht_pair( hashtable, bin );
 
-    list_entry *new = malloc(sizeof(list_entry));
+    list_entry *new = alloc_entry();
 
     new->hash= bin;
     new->name= key;
