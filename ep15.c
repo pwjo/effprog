@@ -27,7 +27,7 @@
 #include <sys/mman.h>
 #include <string.h>
 
-#define HASHTABLE_BITS 10
+#define HASHTABLE_BITS 16
 #define HASHTABLE_SIZE (1<<HASHTABLE_BITS)
 #define HASHTABLE_MASK (HASHTABLE_SIZE-1)
 
@@ -149,6 +149,7 @@ list_entry *ht_get( hashtable_t *hashtable, unsigned char *key, size_t key_len )
 	while( pair != NULL &&
 			   (bin != pair->hash || key_len != pair->name_len || memcmp(key,pair->name,key_len)!=0) )
 		{
+            // printf("collision %*.s, %x\n", key_len, key,bin );
 			pair = pair->next;
 	}
     return pair;
