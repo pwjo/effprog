@@ -27,7 +27,7 @@
 #include <sys/mman.h>
 #include <string.h>
 
-#define HASHTABLE_BITS 16
+#define HASHTABLE_BITS 15
 #define HASHTABLE_SIZE (1<<HASHTABLE_BITS)
 #define HASHTABLE_MASK (HASHTABLE_SIZE-1)
 
